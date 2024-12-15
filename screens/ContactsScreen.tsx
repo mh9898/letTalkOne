@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, Switch } from 'react-native';
 import * as Contacts from 'expo-contacts';
 
 export default function ContactsScreen() {
   const [contacts, setContacts] = useState<Contacts.Contact[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isAvailable, setIsAvailable] = useState(true);
 
   const getContacts = async () => {
     try {
@@ -50,6 +51,22 @@ export default function ContactsScreen() {
     );
   };
 
+  const renderHeader = () => {
+    return (
+      <View style={styles.footer}>
+        <Text style={styles.availabilityText}>
+          Available for calls: {isAvailable ? 'Yes' : 'No'}
+        </Text>
+        <Switch
+          value={isAvailable}
+          onValueChange={setIsAvailable}
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          thumbColor={isAvailable ? '#f5dd4b' : '#f4f3f4'}
+        />
+      </View>
+    );
+  };
+
   if (error) {
     return (
       <View style={styles.container}>
@@ -65,6 +82,8 @@ export default function ContactsScreen() {
         data={contacts}
         renderItem={renderContact}
         keyExtractor={(item) => item.id || Math.random().toString()}
+        // ListFooterComponent={renderFooter}
+        ListHeaderComponent={renderHeader}
       />
     </View>
   );
@@ -93,5 +112,17 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginVertical: 10,
+  },
+  footer: {
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    backgroundColor: '#fff',
+  },
+  availabilityText: {
+    fontSize: 16,
   },
 }); 
